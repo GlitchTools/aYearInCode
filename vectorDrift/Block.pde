@@ -1,7 +1,7 @@
 //cleaning up Block class
 
 float cohesion_coef = block_size*2;
-float separate_coef = block_size*1;
+float separate_coef = block_size*2;
 float align_coef = block_size*2;
 
 class Block {
@@ -9,47 +9,47 @@ class Block {
   PVector location;
   PVector velocity;
   PVector acceleration;
-  
-  float maxspeed=1;
+
+  float maxspeed=1.5;
   float maxforce=.25;
-  
+
   float hue;
   float saturation;
   float brightness;
-  
+
   //constuctor requires args = size, and x, y coordinates
-  Block(int _x, int _y){
+  Block(int _x, int _y) {
     location = new PVector(_x, _y);
     velocity = new PVector(0, 0);
     acceleration = new PVector(0, 0);
   }
-  
-  void run( ArrayList<Block> _blocks){
+
+  void run( ArrayList<Block> _blocks) {
     flock(_blocks);
     update();
-//    display();
+    //    display();
   }
-  
+
   // We accumulate a new acceleration each time based on three rules
   void flock(ArrayList<Block> blocks) {
     PVector sep = separate(blocks);   // Separation
     PVector ali = align(blocks);      // Alignment
     PVector coh = cohesion(blocks);   // Cohesion
     // Arbitrarily weight these forces
-    sep.mult(1);
-    ali.mult(1);
-    coh.mult(1);
+    sep.mult(1.5);
+    ali.mult(1.0);
+    coh.mult(1.25);
     // Add the force vectors to acceleration
     applyForce(sep);
     applyForce(ali);
     applyForce(coh);
   }
-  
+
   void applyForce(PVector force) {
     // We could add mass here if we want A = F / M
     acceleration.add(force);
   }
-  
+
   // Method to update location
   void update() {  
     velocity.add(acceleration);
@@ -71,11 +71,11 @@ class Block {
     steer.limit(maxforce);  // Limit to maximum steering force
     return steer;
   }
-  
+
   // Wraparound
   void borders() {
-    if (location.x < 0) location.x = width;
-    if (location.y < 0) location.y = height;
+    if (location.x < 0) location.x = width - 1;
+    if (location.y < 0) location.y = height - 1;
     if (location.x > width) location.x = 0;
     if (location.y > height) location.y = 0;
   }
@@ -136,8 +136,7 @@ class Block {
       PVector steer = PVector.sub(sum, velocity);
       steer.limit(maxforce);
       return steer;
-    } 
-    else {
+    } else {
       return new PVector(0, 0);
     }
   }
@@ -158,21 +157,19 @@ class Block {
     if (count > 0) {
       sum.div(count);
       return seek(sum);  // Steer towards the location
-    } 
-    else {
+    } else {
       return new PVector(0, 0);
     }
   }
-  void display(){
-//    stroke(0);
-//    noFill();
-//    rect(location.x, location.y, size, size);
-//    
+  void display() {
+    //    stroke(0);
+    //    noFill();
+    //    rect(location.x, location.y, size, size);
+    //    
     stroke(0);
     strokeWeight(1);
     fill(255);
-    rect(location.x,location.y, block_size, block_size);
-
+    rect(location.x, location.y, block_size, block_size);
   }
 }
 
